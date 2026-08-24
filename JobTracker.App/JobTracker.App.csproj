@@ -67,16 +67,22 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.1.79" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Domain\" />
       <Folder Include="Features\JobApplications\Commands\" />
+      <Folder Include="Features\JobApplications\Pages\" />
       <Folder Include="Features\JobApplications\Queries\" />
-      <Folder Include="Infrastructure\Data\" />
+      <Folder Include="Features\Settings\Pages\" />
     </ItemGroup>
 
 </Project>
