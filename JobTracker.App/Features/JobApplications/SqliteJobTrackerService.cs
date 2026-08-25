@@ -5,7 +5,7 @@ using Dapper;
 
 namespace JobTracker.App.Features.JobApplications
 {
-    public class SqliteJobTrackerService : IJobTrackerService
+    public class SqliteJobTrackerService : IJobTrackerService       
     {
         readonly AppDbContext _context;
 
@@ -29,14 +29,6 @@ namespace JobTracker.App.Features.JobApplications
             return result.ToList();
         }
 
-        public async Task<List<JobOrigin>> GetJobOriginsAsync()
-        {
-            var connection = _context.Database.GetDbConnection();
-            var sql = "SELECT * FROM JobOrigins WHERE IsActive = 1";
-            var result = await connection.QueryAsync<JobOrigin>(sql);
-            return result.ToList();
-        }
-
         public async Task AddJobApplicationAsync(JobApplication jobApplication)
         {
             _context.JobApplications.Add(jobApplication);
@@ -54,7 +46,6 @@ namespace JobTracker.App.Features.JobApplications
             await _context.JobApplications
                 .Where(j => j.Id == id)
                 .ExecuteDeleteAsync();
-
         }
     }
 }

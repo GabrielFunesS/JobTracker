@@ -6,7 +6,6 @@ namespace JobTracker.App.Features.JobApplications
     {
         Task<List<JobApplication>> GetJobApplicationsAsync();
         Task<JobApplication?> GetJobApplicationByIdAsync(Guid id);
-        Task<List<JobOrigin>> GetJobOriginsAsync();
         Task AddJobApplicationAsync(JobApplication jobApplication);
         Task UpdateJobApplicationAsync(JobApplication jobApplication);
         Task DeleteJobApplicationAsync(Guid id);

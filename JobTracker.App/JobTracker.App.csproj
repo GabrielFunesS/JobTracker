@@ -79,9 +79,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\JobApplications\Commands\" />
       <Folder Include="Features\JobApplications\Pages\" />
-      <Folder Include="Features\JobApplications\Queries\" />
       <Folder Include="Features\Settings\Pages\" />
     </ItemGroup>
 

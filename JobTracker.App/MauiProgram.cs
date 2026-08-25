@@ -1,4 +1,5 @@
 ﻿using JobTracker.App.Features.JobApplications;
+using JobTracker.App.Features.Settings;
 using JobTracker.App.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,7 @@ namespace JobTracker.App
                 options.UseSqlite($"Data Source={dbPath}"));
 
             builder.Services.AddScoped<IJobTrackerService, SqliteJobTrackerService>();
+            builder.Services.AddScoped<IJobOriginService, SqliteJobOriginService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
