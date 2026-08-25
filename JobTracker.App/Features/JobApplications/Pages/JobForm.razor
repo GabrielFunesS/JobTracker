@@ -1,0 +1,97 @@
+﻿@page "/add-job"
+@using JobTracker.App.Domain;
+@using JobTracker.App.Features.JobApplications;
+@using JobTracker.App.Features.Settings;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+
+@inject IJobTrackerService JobTrackerService;
+@inject IJobOriginService JobOriginService;
+@inject NavigationManager NavManager;
+@inject IJSRuntime JS;
+
+<div class="container mt-4 mb-5">
+    <h3>Nueva Postulación</h3>
+
+    <EditForm Model="application" OnValidSubmit="HandleSubmit">
+        
+        <div class="mb-3">
+            <label>Empresa:</label>
+            <InputText class="form-control" @bind-Value="application.CompanyName" required />
+        </div>
+
+        <div class="mb-3">
+            <label>Puesto (Job Title):</label>
+            <InputText class="form-control" @bind-Value="application.JobTitle" required />
+        </div>
+
+        <div class="mb-3">
+            <label>URL de la oferta (Opcional):</label>
+            <InputText class="form-control" @bind-Value="application.JobUrl" />
+        </div>
+
+        <div class="mb-3">
+            <label>Salario Esperado (Opcional):</label>
+            <InputNumber class="form-control" @bind-Value="application.ExpectedSalary" />
+        </div>
+
+        <div class="mb-3">
+            <label>Notas (Opcional):</label>
+            <InputTextArea class="form-control" @bind-Value="application.Notes" />
+        </div>
+
+        <div class="mb-3">
+            <label>Fecha de Postulación:</label>
+            <InputDate class="form-control" @bind-Value="application.ApplicationDate" required />
+        </div>
+
+        <div class="mb-3">
+            <label>Origen (Plataforma):</label>
+            <InputSelect class="form-control" @bind-Value="application.OriginId">
+                <option value="0">Seleccione un origen...</option>
+                @foreach (var origin in jobOrigins)
+                {
+                    <option value="@origin.Id">@origin.Name</option>
+                }
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Guardar Postulación</button>
+    </EditForm>
+</div>
+
+@code {
+    private JobApplication application = new JobApplication { ApplicationDate = DateTime.Today };
+    private List<JobOrigin> jobOrigins = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        jobOrigins = await JobOriginService.GetJobOriginsAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            if (application.OriginId == 0)
+            {
+                await JS.InvokeVoidAsync("alert", "Por favor, seleccione un origen válido.");
+                return;
+            }
+
+            application.Id = Guid.NewGuid();
+            application.Status = ApplicationStatus.Enviado;
+
+            await JobTrackerService.AddJobApplicationAsync(application);
+            
+            // Ventana emergente de éxito
+            await JS.InvokeVoidAsync("alert", "¡Postulación guardada con éxito!");
+            NavManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            // Ventana emergente de error
+            await JS.InvokeVoidAsync("alert", $"Ocurrió un error: {ex.Message}");
+        }
+    }
+}
