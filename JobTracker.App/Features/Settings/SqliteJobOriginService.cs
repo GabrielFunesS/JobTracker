@@ -14,7 +14,7 @@ namespace JobTracker.App.Features.Settings
             _context = dbContext;
         }
 
-        public async Task<JobOrigin?> GetJobOriginByIdAsync(Guid id)
+        public async Task<JobOrigin?> GetJobOriginByIdAsync(int id)
         {
             var connection = _context.Database.GetDbConnection();
             var sql = "SELECT * FROM JobOrigins WHERE Id = @Id";
@@ -41,11 +41,12 @@ namespace JobTracker.App.Features.Settings
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteJobOriginsAsync(Guid id)
+        public async Task SoftDeleteJobOriginAsync(int id)
         {
             await _context.JobOrigins
-                .Where(j => j.Id == id)
-                .ExecuteDeleteAsync();
+                .Where(o => o.Id == id)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(origin => origin.IsActive, false));
         }
     }
 }
