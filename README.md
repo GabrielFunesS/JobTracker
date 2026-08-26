@@ -24,18 +24,19 @@ Entidad central `JobApplication`:
 
 ## 🎯 4. Historias de Usuario (Fase 1 - MVP Local)
 
-### Gestión de Postulaciones
+### Gestión de Postulaciones y Configuraciones
 - [X] **US 01:** Como usuario, quiero poder agregar una nueva postulación (Empresa, Puesto, URL, Fecha) para registrar mi actividad.
-- [X] **US 02:** Como usuario, quiero poder editar los detalles de una postulación (ej. agregar notas después de una entrevista) para mantener la información actualizada.
+- [X] **US 02:** Como usuario, quiero poder editar los detalles de una postulación (ej. agregar notas) para mantener la información actualizada.
 - [X] **US 03:** Como usuario, quiero poder eliminar una postulación creada por error.
+- [X] **US 05b (Agregada):** Como usuario, quiero administrar (CRUD) mis orígenes de postulación para categorizar eficientemente mis canales de búsqueda.
 
 ### Tablero Visual (Kanban)
-- [X] **US 04:** Como usuario, quiero ver todas mis postulaciones activas en un tablero dividido por columnas según su estado.
-- [X] **US 05:** Como usuario, quiero poder cambiar el estado de una postulación para reflejar mi avance en los procesos.
+- [X] **US 04:** Como usuario, quiero ver mis postulaciones activas en un tablero dividido por columnas. *(Nota Técnica: UI adaptada a Tap-to-Edit para garantizar 100% de compatibilidad cross-platform en .NET MAUI, priorizando UX móvil sobre Drag & Drop nativo).*
+- [X] **US 05:** Como usuario, quiero cambiar el estado de una postulación desde el tablero para reflejar el avance del proceso.
 
-### Motor de Alertas (Reglas de Negocio)
-- [ ] **US 06:** Como usuario, quiero que el sistema resalte las postulaciones en estado "Enviado" que llevan más de **5 días hábiles sin actualización**, para recordar enviar un mensaje de *Follow-Up*.
-- [ ] **US 07:** Como usuario, quiero que el sistema sugiera archivar postulaciones con más de **30 días de inactividad** para mantener mi tablero limpio.
+### Motor de Alertas (Notificaciones Nativas)
+- [ ] **US 06:** Como usuario, quiero recibir una notificación nativa del SO (Windows/Android) si una postulación en "Enviado" lleva más de **5 días hábiles** sin actualización, para recordar hacer *Follow-Up*.
+- [ ] **US 07:** Como usuario, quiero recibir sugerencias para archivar postulaciones con más de **30 días de inactividad** para mantener mi tablero limpio.
 
 ---
 
