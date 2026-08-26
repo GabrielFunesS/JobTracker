@@ -25,13 +25,13 @@ Entidad central `JobApplication`:
 ## 🎯 4. Historias de Usuario (Fase 1 - MVP Local)
 
 ### Gestión de Postulaciones
-- [ ] **US 01:** Como usuario, quiero poder agregar una nueva postulación (Empresa, Puesto, URL, Fecha) para registrar mi actividad.
-- [ ] **US 02:** Como usuario, quiero poder editar los detalles de una postulación (ej. agregar notas después de una entrevista) para mantener la información actualizada.
-- [ ] **US 03:** Como usuario, quiero poder eliminar una postulación creada por error.
+- [X] **US 01:** Como usuario, quiero poder agregar una nueva postulación (Empresa, Puesto, URL, Fecha) para registrar mi actividad.
+- [X] **US 02:** Como usuario, quiero poder editar los detalles de una postulación (ej. agregar notas después de una entrevista) para mantener la información actualizada.
+- [X] **US 03:** Como usuario, quiero poder eliminar una postulación creada por error.
 
 ### Tablero Visual (Kanban)
-- [ ] **US 04:** Como usuario, quiero ver todas mis postulaciones activas en un tablero dividido por columnas según su estado.
-- [ ] **US 05:** Como usuario, quiero poder cambiar el estado de una postulación para reflejar mi avance en los procesos.
+- [X] **US 04:** Como usuario, quiero ver todas mis postulaciones activas en un tablero dividido por columnas según su estado.
+- [X] **US 05:** Como usuario, quiero poder cambiar el estado de una postulación para reflejar mi avance en los procesos.
 
 ### Motor de Alertas (Reglas de Negocio)
 - [ ] **US 06:** Como usuario, quiero que el sistema resalte las postulaciones en estado "Enviado" que llevan más de **5 días hábiles sin actualización**, para recordar enviar un mensaje de *Follow-Up*.
