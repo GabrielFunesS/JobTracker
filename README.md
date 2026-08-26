@@ -1,6 +1,6 @@
 # 🚀 JobTracker - Gestor Estratégico de Postulaciones
 
-Aplicación nativa multiplataforma desarrollada en **.NET 9** diseñada para centralizar, gestionar y medir el embudo de postulaciones laborales mediante metodologías ágiles.
+Aplicación nativa multiplataforma desarrollada en **.NET ** diseñada para centralizar, gestionar y medir el embudo de postulaciones laborales mediante metodologías ágiles.
 
 ## 📄 1. Resumen Ejecutivo
 El objetivo de la fase inicial (MVP) es reemplazar el seguimiento manual en hojas de cálculo mediante un tablero Kanban interactivo y un sistema de alertas. La aplicación opera de manera 100% local (Offline), sentando una base arquitectónica limpia para futuras fases de sincronización en la nube y asistencia mediante Inteligencia Artificial.
@@ -24,18 +24,19 @@ Entidad central `JobApplication`:
 
 ## 🎯 4. Historias de Usuario (Fase 1 - MVP Local)
 
-### Gestión de Postulaciones
-- [ ] **US 01:** Como usuario, quiero poder agregar una nueva postulación (Empresa, Puesto, URL, Fecha) para registrar mi actividad.
-- [ ] **US 02:** Como usuario, quiero poder editar los detalles de una postulación (ej. agregar notas después de una entrevista) para mantener la información actualizada.
-- [ ] **US 03:** Como usuario, quiero poder eliminar una postulación creada por error.
+### Gestión de Postulaciones y Configuraciones
+- [X] **US 01:** Como usuario, quiero poder agregar una nueva postulación (Empresa, Puesto, URL, Fecha) para registrar mi actividad.
+- [X] **US 02:** Como usuario, quiero poder editar los detalles de una postulación (ej. agregar notas) para mantener la información actualizada.
+- [X] **US 03:** Como usuario, quiero poder eliminar una postulación creada por error.
+- [X] **US 05b (Agregada):** Como usuario, quiero administrar (CRUD) mis orígenes de postulación para categorizar eficientemente mis canales de búsqueda.
 
 ### Tablero Visual (Kanban)
-- [ ] **US 04:** Como usuario, quiero ver todas mis postulaciones activas en un tablero dividido por columnas según su estado.
-- [ ] **US 05:** Como usuario, quiero poder cambiar el estado de una postulación para reflejar mi avance en los procesos.
+- [X] **US 04:** Como usuario, quiero ver mis postulaciones activas en un tablero dividido por columnas. *(Nota Técnica: UI adaptada a Tap-to-Edit para garantizar 100% de compatibilidad cross-platform en .NET MAUI, priorizando UX móvil sobre Drag & Drop nativo).*
+- [X] **US 05:** Como usuario, quiero cambiar el estado de una postulación desde el tablero para reflejar el avance del proceso.
 
-### Motor de Alertas (Reglas de Negocio)
-- [ ] **US 06:** Como usuario, quiero que el sistema resalte las postulaciones en estado "Enviado" que llevan más de **5 días hábiles sin actualización**, para recordar enviar un mensaje de *Follow-Up*.
-- [ ] **US 07:** Como usuario, quiero que el sistema sugiera archivar postulaciones con más de **30 días de inactividad** para mantener mi tablero limpio.
+### Motor de Alertas (Notificaciones Nativas)
+- [ ] **US 06:** Como usuario, quiero recibir una notificación nativa del SO (Windows/Android) si una postulación en "Enviado" lleva más de **5 días hábiles** sin actualización, para recordar hacer *Follow-Up*.
+- [ ] **US 07:** Como usuario, quiero recibir sugerencias para archivar postulaciones con más de **30 días de inactividad** para mantener mi tablero limpio.
 
 ---
 
@@ -50,3 +51,8 @@ Entidad central `JobApplication`:
 - [ ] Integración con APIs de Modelos de Lenguaje (OpenAI / Gemini).
 - [ ] **Auto-Onboarding:** Lectura y estructuración automática de datos del CV en formato PDF.
 - [ ] **Entrenador de Entrevistas:** Análisis de la URL de la vacante para sugerir áreas de estudio y autogenerar preguntas probables de entrevista junto con guiones de respuesta basados en el **Método STAR**.
+
+---
+
+## 🔧 6. Deuda Técnica y Known Issues
+- [ ] **Tablero Kanban (Drag & Drop):** Actualmente la transición de estados en el tablero Kanban se realiza mediante navegación "Tap-to-Edit" por limitaciones del WebView2 de MAUI con eventos HTML5 nativos en Windows/Android. Queda pendiente investigar implementaciones de librerías JS (como SortableJS) o gestos nativos de MAUI para habilitar el Drag & Drop fluido en dispositivos táctiles.
