@@ -67,10 +67,19 @@
             </InputSelect>
         </div>
 
-        <!-- Cambiamos el texto del botón dinámicamente -->
-        <button type="submit" class="btn btn-primary w-100">
-            @(Id.HasValue ? "Actualizar Postulación" : "Guardar Postulación")
-        </button>
+        <!-- BOTONES DE ACCIÓN -->
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary flex-grow-1">
+                @(Id.HasValue ? "Actualizar Postulación" : "Guardar Postulación")
+            </button>
+
+            @if (Id.HasValue)
+            {
+                <button type="button" class="btn btn-outline-danger" @onclick="DeleteApplication">
+                    Eliminar
+                </button>
+            }
+        </div>
     </EditForm>
 </div>
 
@@ -130,6 +139,18 @@
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("alert", $"Ocurrió un error: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteApplication()
+    {
+        // Usamos el JS Runtime que ya tenés inyectado para pedir confirmación
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "⚠️ ¿Estás seguro de que querés eliminar esta postulación por completo?");
+
+        if (confirmed && Id.HasValue)
+        {
+            await JobTrackerService.DeleteJobApplicationAsync(Id.Value);
+            NavManager.NavigateTo("/"); // Volvemos al tablero
         }
     }
 }
