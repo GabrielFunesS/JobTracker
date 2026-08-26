@@ -1,74 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="app-container">
-    <!-- NUEVA BARRA SUPERIOR -->
     <nav class="top-navbar">
-        <a href="/" class="nav-btn" title="Inicio">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
-                <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z" />
-            </svg>
+
+        <!-- El título ahora es el botón de inicio -->
+        <a href="/" class="app-title-link" title="Ir al Inicio">
+            JobTracker
         </a>
 
-        <span class="app-title">JobTracker</span>
-
-        <a href="/add-job" class="nav-btn" title="Nueva Postulación">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-            </svg>
-        </a>
+        <div class="d-flex">
+            <a href="/settings/origins" class="nav-btn me-2" title="Configuración">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                    <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                </svg>
+            </a>
+            <a href="/add-job" class="nav-btn" title="Nueva Postulación">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                </svg>
+            </a>
+        </div>
     </nav>
 
-    <!-- AQUÍ SE CARGAN LAS PANTALLAS (Kanban o Formulario) -->
     <main class="main-content">
         @Body
     </main>
 </div>
-
-<style>
-    .app-container {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        background-color: #ffffff;
-    }
-
-    .top-navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #0d6efd; /* Azul de Bootstrap */
-        color: white;
-        padding: 0 1rem;
-        height: 60px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        z-index: 1000;
-    }
-
-    .nav-btn {
-        color: white;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        transition: background-color 0.2s;
-    }
-
-        .nav-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-    .app-title {
-        font-size: 1.25rem;
-        font-weight: bold;
-        letter-spacing: 0.5px;
-    }
-
-    .main-content {
-        flex: 1;
-        overflow: hidden; /* Esto es clave para que el kanban tenga su propio scroll */
-    }
-</style>

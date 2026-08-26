@@ -1,0 +1,152 @@
+﻿@page "/settings/origins"
+@using JobTracker.App.Domain
+@using JobTracker.App.Features.Settings
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@inject IJobOriginService OriginService
+@inject IJSRuntime JS
+
+<div class="container mt-4 mb-5">
+    <h3>Configuración de Orígenes</h3>
+    <p class="text-muted">Gestiona las plataformas desde donde te postulas (ej: LinkedIn, Computrabajo, Bumeran).</p>
+    <!-- PANEL DE DEPURACIÓN VISUAL -->
+    <div class="alert alert-info">
+        Estado de los botones: <strong>@mensajeDebug</strong>
+    </div>
+    <button type="button" class="btn btn-warning mb-3" @onclick="PruebaVisual">BOTÓN DE PRUEBA VISUAL</button>
+
+    <!-- Formulario rápido para Agregar/Editar -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">@(isEditing ? "Editar Origen" : "Nuevo Origen")</h5>
+            <EditForm Model="currentOrigin" OnValidSubmit="SaveOrigin">
+                <div class="input-group">
+                    <InputText class="form-control" placeholder="Nombre de la plataforma..." @bind-Value="currentOrigin.Name" required />
+                    <button class="btn btn-primary" type="submit">
+                        @(isEditing ? "Actualizar" : "Agregar")
+                    </button>
+                    @if (isEditing)
+                    {
+                        <button class="btn btn-outline-secondary" type="button" @onclick="CancelEdit">Cancelar</button>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- Lista de Orígenes Activos -->
+    <div class="list-group shadow-sm">
+        @if (origins.Count == 0)
+        {
+            <div class="list-group-item text-center text-muted py-4">
+                No hay orígenes registrados. Agrega uno para empezar.
+            </div>
+        }
+        else
+        {
+            @foreach (var origin in origins)
+            {
+                // Guardamos solo el ID (tipo primitivo, a prueba de fallos)
+                int currentId = origin.Id;
+
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">@origin.Name</span>
+                    <div>
+                        <!-- Usamos explícitamente @(...) para forzar a Razor a compilar el evento -->
+                        <button type="button" class="btn btn-sm btn-outline-primary me-2"
+                                @onclick="@(() => EditOrigin(currentId))">
+                            Editar
+                        </button>
+
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                @onclick="@(() => DeleteOrigin(currentId))">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    private List<JobOrigin> origins = new();
+    private JobOrigin currentOrigin = new();
+    private bool isEditing = false;
+
+    // Nueva variable para ver si Blazor responde
+    private string mensajeDebug = "Esperando tu clic...";
+
+    // Prueba 100% C# sin JavaScript
+    private void PruebaVisual()
+    {
+        mensajeDebug = $"¡BLAZOR ESTÁ VIVO! Clic detectado a las {DateTime.Now:HH:mm:ss}";
+        StateHasChanged(); // Obligamos a la pantalla a actualizarse
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrigins();
+    }
+
+    private async Task LoadOrigins()
+    {
+        origins = await OriginService.GetJobOriginsAsync();
+    }
+
+    private async Task SaveOrigin()
+    {
+        if (string.IsNullOrWhiteSpace(currentOrigin.Name)) return;
+
+        if (isEditing)
+        {
+            await OriginService.UpdateJobOriginAsync(currentOrigin);
+        }
+        else
+        {
+            await OriginService.AddJobOriginAsync(currentOrigin);
+        }
+
+        // Reseteamos el formulario y recargamos
+        currentOrigin = new JobOrigin();
+        isEditing = false;
+        await LoadOrigins();
+    }
+
+    private void EditOrigin(int id)
+    {
+        // Buscamos el elemento en nuestra lista en memoria usando el ID
+        var originToEdit = origins.FirstOrDefault(o => o.Id == id);
+
+        if (originToEdit != null)
+        {
+            // Clonamos para el formulario
+            currentOrigin = new JobOrigin
+            {
+                Id = originToEdit.Id,
+                Name = originToEdit.Name,
+                IsActive = originToEdit.IsActive
+            };
+            isEditing = true;
+        }
+    }
+
+    private void CancelEdit()
+    {
+        currentOrigin = new JobOrigin();
+        isEditing = false;
+    }
+
+    private async Task DeleteOrigin(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "¿Estás seguro de que deseas eliminar este origen?");
+        if (confirmed)
+        {
+            await OriginService.SoftDeleteJobOriginAsync(id);
+
+            // Recargamos la lista desde la base de datos
+            await LoadOrigins();
+        }
+    }
+}
