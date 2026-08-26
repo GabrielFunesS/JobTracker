@@ -1,4 +1,5 @@
-﻿using JobTracker.App.Features.JobApplications;
+﻿using Dapper;
+using JobTracker.App.Features.JobApplications;
 using JobTracker.App.Features.Settings;
 using JobTracker.App.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ namespace JobTracker.App
     {
         public static MauiApp CreateMauiApp()
         {
+            SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
+
             var builder = MauiApp.CreateBuilder();
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "JobTracker.db");
             builder

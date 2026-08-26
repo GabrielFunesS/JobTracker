@@ -1,4 +1,5 @@
 ﻿@page "/add-job"
+@page "/edit-job/{Id:guid}"
 @using JobTracker.App.Domain;
 @using JobTracker.App.Features.JobApplications;
 @using JobTracker.App.Features.Settings;
@@ -56,17 +57,44 @@
             </InputSelect>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Guardar Postulación</button>
+        <div class="mb-3">
+            <label>Estado de la Postulación:</label>
+            <InputSelect class="form-control" @bind-Value="application.Status">
+                @foreach (var status in Enum.GetValues<ApplicationStatus>())
+                {
+                    <option value="@status">@status.ToString()</option>
+                }
+            </InputSelect>
+        </div>
+
+        <!-- Cambiamos el texto del botón dinámicamente -->
+        <button type="submit" class="btn btn-primary w-100">
+            @(Id.HasValue ? "Actualizar Postulación" : "Guardar Postulación")
+        </button>
     </EditForm>
 </div>
 
 @code {
+    [Parameter]
+    public Guid? Id { get; set; }
+
     private JobApplication application = new JobApplication { ApplicationDate = DateTime.Today };
     private List<JobOrigin> jobOrigins = new();
 
     protected override async Task OnInitializedAsync()
     {
+        // 1. Cargamos los orígenes siempre
         jobOrigins = await JobOriginService.GetJobOriginsAsync();
+
+        // 2. Si hay un ID en la URL, estamos en Modo Edición
+        if (Id.HasValue)
+        {
+            var existingApp = await JobTrackerService.GetJobApplicationByIdAsync(Id.Value);
+            if (existingApp != null)
+            {
+                application = existingApp;
+            }
+        }
     }
 
     private async Task HandleSubmit()
@@ -79,18 +107,28 @@
                 return;
             }
 
-            application.Id = Guid.NewGuid();
-            application.Status = ApplicationStatus.Enviado;
+            // Modo Nuevo
+            if (!Id.HasValue)
+            {
+                application.Id = Guid.NewGuid();
+                // Si el usuario no tocó el estado, forzamos "Pendiente" al crear
+                if (application.Status == default)
+                    application.Status = ApplicationStatus.Pendiente;
 
-            await JobTrackerService.AddJobApplicationAsync(application);
-            
-            // Ventana emergente de éxito
-            await JS.InvokeVoidAsync("alert", "¡Postulación guardada con éxito!");
+                await JobTrackerService.AddJobApplicationAsync(application);
+                await JS.InvokeVoidAsync("alert", "¡Postulación guardada!");
+            }
+            // Modo Edición
+            else
+            {
+                await JobTrackerService.UpdateJobApplicationAsync(application);
+                await JS.InvokeVoidAsync("alert", "¡Postulación actualizada!");
+            }
+
             NavManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
-            // Ventana emergente de error
             await JS.InvokeVoidAsync("alert", $"Ocurrió un error: {ex.Message}");
         }
     }

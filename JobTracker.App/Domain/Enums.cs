@@ -2,6 +2,7 @@
 {
     public enum ApplicationStatus
     {
+        Pendiente,
         Enviado,
         Entrevistas,
         Oferta,
