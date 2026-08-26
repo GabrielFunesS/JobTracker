@@ -1,6 +1,6 @@
 # 🚀 JobTracker - Gestor Estratégico de Postulaciones
 
-Aplicación nativa multiplataforma desarrollada en **.NET 9** diseñada para centralizar, gestionar y medir el embudo de postulaciones laborales mediante metodologías ágiles.
+Aplicación nativa multiplataforma desarrollada en **.NET ** diseñada para centralizar, gestionar y medir el embudo de postulaciones laborales mediante metodologías ágiles.
 
 ## 📄 1. Resumen Ejecutivo
 El objetivo de la fase inicial (MVP) es reemplazar el seguimiento manual en hojas de cálculo mediante un tablero Kanban interactivo y un sistema de alertas. La aplicación opera de manera 100% local (Offline), sentando una base arquitectónica limpia para futuras fases de sincronización en la nube y asistencia mediante Inteligencia Artificial.
@@ -51,3 +51,8 @@ Entidad central `JobApplication`:
 - [ ] Integración con APIs de Modelos de Lenguaje (OpenAI / Gemini).
 - [ ] **Auto-Onboarding:** Lectura y estructuración automática de datos del CV en formato PDF.
 - [ ] **Entrenador de Entrevistas:** Análisis de la URL de la vacante para sugerir áreas de estudio y autogenerar preguntas probables de entrevista junto con guiones de respuesta basados en el **Método STAR**.
+
+---
+
+## 🔧 6. Deuda Técnica y Known Issues
+- [ ] **Tablero Kanban (Drag & Drop):** Actualmente la transición de estados en el tablero Kanban se realiza mediante navegación "Tap-to-Edit" por limitaciones del WebView2 de MAUI con eventos HTML5 nativos en Windows/Android. Queda pendiente investigar implementaciones de librerías JS (como SortableJS) o gestos nativos de MAUI para habilitar el Drag & Drop fluido en dispositivos táctiles.
