@@ -3,6 +3,7 @@
 @using JobTracker.App.Domain;
 @using JobTracker.App.Features.JobApplications;
 @using JobTracker.App.Features.Settings;
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 
@@ -66,6 +67,21 @@
                 }
             </InputSelect>
         </div>
+
+        <!-- Aparece SOLO si el estado es Rechazado -->
+        @if (application.Status == ApplicationStatus.Rechazado)
+        {
+            <div class="mb-3 border-start border-danger border-4 ps-3 py-2 bg-light">
+                <label class="text-danger fw-bold">Motivo de Rechazo:</label>
+                <InputSelect class="form-control border-danger" @bind-Value="application.RejectionReason">
+                    <option value="">Seleccione el motivo...</option>
+                    @foreach (var reason in Enum.GetValues<RejectionReason>())
+                    {
+                        <option value="@reason">@reason.ToString()</option>
+                    }
+                </InputSelect>
+            </div>
+        }
 
         <!-- BOTONES DE ACCIÓN -->
         <div class="d-flex gap-2 mt-4">

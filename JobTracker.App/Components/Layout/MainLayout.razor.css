@@ -29,10 +29,10 @@
     transition: background-color 0.2s;
 }
 
-    .nav-btn:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-        color: white;
-    }
+ .nav-btn:hover {
+     background-color: rgba(255, 255, 255, 0.2);
+     color: white;
+ }
 
 .app-title-link {
     font-size: 1.25rem;
@@ -44,5 +44,6 @@
 
 .main-content {
     flex: 1;
-    overflow: hidden;
+    overflow-y: auto; /* Permite el scroll hacia abajo en formularios */
+    overflow-x: hidden; /* Evita que la app "baile" hacia los costados */
 }

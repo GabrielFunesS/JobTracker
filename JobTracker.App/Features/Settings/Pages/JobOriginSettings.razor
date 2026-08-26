@@ -10,11 +10,6 @@
 <div class="container mt-4 mb-5">
     <h3>Configuración de Orígenes</h3>
     <p class="text-muted">Gestiona las plataformas desde donde te postulas (ej: LinkedIn, Computrabajo, Bumeran).</p>
-    <!-- PANEL DE DEPURACIÓN VISUAL -->
-    <div class="alert alert-info">
-        Estado de los botones: <strong>@mensajeDebug</strong>
-    </div>
-    <button type="button" class="btn btn-warning mb-3" @onclick="PruebaVisual">BOTÓN DE PRUEBA VISUAL</button>
 
     <!-- Formulario rápido para Agregar/Editar -->
     <div class="card mb-4 shadow-sm">
@@ -77,13 +72,6 @@
 
     // Nueva variable para ver si Blazor responde
     private string mensajeDebug = "Esperando tu clic...";
-
-    // Prueba 100% C# sin JavaScript
-    private void PruebaVisual()
-    {
-        mensajeDebug = $"¡BLAZOR ESTÁ VIVO! Clic detectado a las {DateTime.Now:HH:mm:ss}";
-        StateHasChanged(); // Obligamos a la pantalla a actualizarse
-    }
 
     protected override async Task OnInitializedAsync()
     {

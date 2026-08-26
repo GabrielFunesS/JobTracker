@@ -35,9 +35,13 @@ namespace JobTracker.App.Features.JobApplications
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateJobApplicationAsync(JobApplication jobApplication)
+        public async Task UpdateJobApplicationAsync(JobApplication application)
         {
-            _context.JobApplications.Update(jobApplication);
+            // 1. Limpiamos la memoria de EF Core para que no haya conflictos de ID
+            _context.ChangeTracker.Clear();
+
+            // 2. Ahora sí, actualizamos sin que el guardia se queje
+            _context.JobApplications.Update(application);
             await _context.SaveChangesAsync();
         }
 
