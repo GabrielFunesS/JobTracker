@@ -1,20 +1,27 @@
 ﻿@page "/"
 @using JobTracker.App.Domain
 @using JobTracker.App.Features.JobApplications
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
 @inject IJobTrackerService JobService
+@inject KanbanStatusMover Mover
+@inject IJSRuntime JS
 
 <div class="kanban-container">
     <div class="kanban-board">
         @foreach (var status in Enum.GetValues<ApplicationStatus>())
         {
-            <div class="kanban-column">
+            <div class="kanban-column" data-status="@status">
                 <h4 class="column-title">@status.ToString()</h4>
 
                 <div class="column-content">
                     @foreach (var app in applications.Where(a => a.Status == status))
                     {
-                        <!-- TARJETA CONVERTIDA EN ENLACE NATIVO -->
-                        <a class="kanban-card" href="/edit-job/@app.Id">
+                        <!-- Sigue siendo un enlace: el tap abre el formulario -->
+                        <a class="kanban-card"
+                           href="/edit-job/@app.Id"
+                           data-app-id="@app.Id"
+                           data-status="@app.Status">
                             <div class="card-title">@app.CompanyName</div>
                             <div class="card-subtitle">@app.JobTitle</div>
                             <div class="card-date">@app.ApplicationDate.ToShortDateString()</div>
@@ -28,9 +35,75 @@
 
 @code {
     private List<JobApplication> applications = new();
+    private IJSObjectReference? module;
+    private DotNetObjectReference<JobBoard>? selfRef;
+    private bool disposed;
 
     protected override async Task OnInitializedAsync()
     {
         applications = await JobService.GetJobApplicationsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/kanban-dnd.js");
+            selfRef = DotNetObjectReference.Create(this);
+            await module.InvokeVoidAsync("init", selfRef);
+        }
+        catch (Exception)
+        {
+            // Sin JS el tablero sigue funcionando con tap (US-04). No es un error fatal.
+            module = null;
+        }
+    }
+
+    /// <summary>
+    /// Lo invoca el JS al soltar una tarjeta en otra columna. Valida el id y el
+    /// estado antes de tocar nada: un Guid inválido o un valor fuera del enum
+    /// no escriben.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnCardDroppedAsync(string appId, string status)
+    {
+        if (disposed) return;
+        if (!Guid.TryParse(appId, out var id)) return;
+        if (!Enum.TryParse<ApplicationStatus>(status, ignoreCase: true, out var target)) return;
+        if (!Enum.IsDefined(target)) return;
+
+        var application = applications.FirstOrDefault(a => a.Id == id);
+        if (application is null) return;
+
+        var moved = await Mover.MoveAsync(application, target);
+        if (!moved) return;
+
+        applications = await JobService.GetJobApplicationsAsync();
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        disposed = true;
+
+        if (module is not null)
+        {
+            try
+            {
+                await module.InvokeVoidAsync("dispose");
+            }
+            catch (JSDisconnectedException) { }
+            catch (ObjectDisposedException) { }
+
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException) { }
+        }
+
+        selfRef?.Dispose();
     }
 }

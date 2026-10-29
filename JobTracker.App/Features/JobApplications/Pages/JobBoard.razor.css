@@ -73,3 +73,27 @@
     font-size: 0.8rem;
     text-align: right;
 }
+
+/* --- Arrastre (BRIEF-001): solo affordance, sin rediseño --- */
+
+.kanban-card {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.kanban-column {
+    touch-action: pan-y;
+}
+
+.kanban-card.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+    pointer-events: none; /* elementFromPoint ve la columna, no la tarjeta */
+}
+
+.kanban-column.drop-target {
+    outline: 2px dashed #0d6efd;
+    outline-offset: -4px;
+    background-color: #eaf2ff;
+}

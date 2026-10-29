@@ -29,6 +29,7 @@ namespace JobTracker.App
 
             builder.Services.AddScoped<IJobTrackerService, SqliteJobTrackerService>();
             builder.Services.AddScoped<IJobOriginService, SqliteJobOriginService>();
+            builder.Services.AddScoped<KanbanStatusMover>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
