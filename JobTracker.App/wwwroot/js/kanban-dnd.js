@@ -145,11 +145,15 @@ function onPointerUp(e) {
     if (e.pointerId !== state.pointerId) return;
 
     if (state.dragging && state.card) {
+        // Un arrastre nunca acaba en clic: se suelte donde se suelte. Antes el
+        // guard solo se armaba si cambiaba la columna, así que soltar en la
+        // misma columna (o fuera de todas) abría la tarjeta como un tap.
+        state.blockClickUntil = Date.now() + CLICK_GUARD;
+
         const target = columnAt(e.clientX, e.clientY);
         const status = target ? target.dataset.status : null;
         const appId = state.card.dataset.appId;
         if (status && appId && status !== state.source) {
-            state.blockClickUntil = Date.now() + CLICK_GUARD;
             const ref = state.ref;
             if (ref) {
                 ref.invokeMethodAsync('OnCardDroppedAsync', appId, status)
