@@ -97,3 +97,20 @@
     outline-offset: -4px;
     background-color: #eaf2ff;
 }
+
+/* --- Copia que sigue al puntero (BRIEF-002) ---
+   Hereda fondo, borde y radio de .kanban-card: el clon conserva la clase y el
+   atributo de ámbito de Razor. Aquí solo se posiciona. */
+.kanban-card-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    margin: 0;
+    opacity: 0.9;
+    pointer-events: none; /* elementFromPoint debe ver la columna, no la copia */
+    cursor: grabbing;
+    transition: none;
+    will-change: transform;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}

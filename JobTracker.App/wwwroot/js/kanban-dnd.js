@@ -1,9 +1,10 @@
-// kanban-dnd.js — arrastre de tarjetas del tablero (BRIEF-001 / PLAN-001).
+// kanban-dnd.js — arrastre de tarjetas del tablero (BRIEF-001 / BRIEF-002).
 //
 // El JS solo detecta el gesto; la decisión y la escritura viven en
 // KanbanStatusMover (C#). Delegación en document para sobrevivir a los
 // re-render de Blazor. Un único puntero activo. Todas las salidas pasan por
-// finish(), que libera captura, limpia clases y deja el guard de clic.
+// finish(), que libera captura, limpia clases, borra la copia y deja el guard
+// de clic.
 
 const THRESHOLD = 8;   // px para considerar que es un arrastre y no un clic
 const CLICK_GUARD = 300; // ms para que soltar no navegue
@@ -18,6 +19,9 @@ const state = {
     source: null,
     hovered: null,
     blockClickUntil: 0,
+    ghost: null,
+    offsetX: 0,
+    offsetY: 0,
 };
 
 export function init(dotNetRef) {
@@ -27,9 +31,11 @@ export function init(dotNetRef) {
     document.addEventListener('pointermove', onPointerMove, true);
     document.addEventListener('pointerup', onPointerUp, true);
     document.addEventListener('pointercancel', onPointerCancel, true);
-    document.addEventListener('lostpointercapture', onPointerCancel, true);
+    document.addEventListener('lostpointercapture', onLostPointerCapture, true);
+    document.addEventListener('pointerout', onPointerOut, true);
     document.addEventListener('click', onClickCapture, true);
     document.addEventListener('dragstart', onDragStart, true);
+    window.addEventListener('blur', onWindowBlur);
 }
 
 export function dispose() {
@@ -37,9 +43,11 @@ export function dispose() {
     document.removeEventListener('pointermove', onPointerMove, true);
     document.removeEventListener('pointerup', onPointerUp, true);
     document.removeEventListener('pointercancel', onPointerCancel, true);
-    document.removeEventListener('lostpointercapture', onPointerCancel, true);
+    document.removeEventListener('lostpointercapture', onLostPointerCapture, true);
+    document.removeEventListener('pointerout', onPointerOut, true);
     document.removeEventListener('click', onClickCapture, true);
     document.removeEventListener('dragstart', onDragStart, true);
+    window.removeEventListener('blur', onWindowBlur);
     finish();
     state.ref = null;
 }
@@ -59,6 +67,36 @@ function highlight(column) {
     state.hovered = column;
     if (column) column.classList.add('drop-target');
 }
+
+// --- copia que viaja con el puntero (BRIEF-002) ---
+
+function createGhost(rect) {
+    if (state.ghost || !state.card) return;
+
+    const clone = state.card.cloneNode(true);
+    clone.classList.add('kanban-card-ghost');
+    clone.removeAttribute('href');      // no debe navegar ni recibir foco
+    clone.setAttribute('aria-hidden', 'true');
+    clone.style.width = rect.width + 'px';
+    document.body.appendChild(clone);
+
+    state.ghost = clone;
+}
+
+function moveGhost(x, y) {
+    if (!state.ghost) return;
+    state.ghost.style.transform =
+        `translate(${x - state.offsetX}px, ${y - state.offsetY}px)`;
+}
+
+function destroyGhost() {
+    if (state.ghost) {
+        state.ghost.remove();
+        state.ghost = null;
+    }
+}
+
+// --- gesto ---
 
 function onPointerDown(e) {
     if (!state.ref || state.pointerId !== null) return;      // un solo puntero
@@ -84,6 +122,14 @@ function onPointerMove(e) {
 
         state.dragging = true;
         state.card.classList.add('dragging');
+
+        // El agarre se mide en ESTE instante: así la copia nace bajo el cursor
+        // sin saltar (el puntero ya no está en startX/startY).
+        const rect = state.card.getBoundingClientRect();
+        state.offsetX = e.clientX - rect.left;
+        state.offsetY = e.clientY - rect.top;
+        createGhost(rect);
+
         try {
             state.card.setPointerCapture(e.pointerId);
         } catch (_) {
@@ -91,6 +137,7 @@ function onPointerMove(e) {
         }
     }
 
+    if (state.dragging) moveGhost(e.clientX, e.clientY);
     highlight(columnAt(e.clientX, e.clientY));
 }
 
@@ -119,6 +166,24 @@ function onPointerCancel(e) {
     finish(); // cancela sin invocar al componente
 }
 
+function onLostPointerCapture(e) {
+    // finish() suelta la captura y este evento puede llegar después, incluso
+    // con otro gesto empezado: solo cancela si el arrastre sigue vivo.
+    if (!state.dragging) return;
+    if (e.pointerId !== state.pointerId) return;
+    finish();
+}
+
+function onPointerOut(e) {
+    // Salir de la ventana puede no dejar llegar nunca el pointerup.
+    if (!state.dragging || e.relatedTarget) return;
+    finish();
+}
+
+function onWindowBlur() {
+    if (state.dragging) finish();
+}
+
 function onClickCapture(e) {
     if (Date.now() >= state.blockClickUntil) return;
     // Venimos de un arrastre: el clic no debe navegar al formulario.
@@ -143,6 +208,7 @@ function finish() {
         state.card.classList.remove('dragging');
     }
     if (state.hovered) state.hovered.classList.remove('drop-target');
+    destroyGhost();
 
     state.pointerId = null;
     state.card = null;
